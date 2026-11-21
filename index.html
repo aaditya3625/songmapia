@@ -14,7 +14,7 @@ button{font:inherit;font-size:13px;border:.8px solid var(--line);background:#fff
 button.on,button.p{background:var(--ink);color:#fff;border-color:var(--ink)}button:disabled{opacity:.45;cursor:default}
 .mapbox{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--sea)}
 canvas{width:100%;height:auto;display:block}
-.zoom{position:absolute;top:8px;right:8px;display:flex;gap:6px}.zoom button{background:rgba(255,255,255,.92);font-size:12px;padding:4px 10px}
+.zoom{position:absolute;top:8px;right:8px;display:flex;gap:6px}.zoom button{background:rgba(255,255,255,.92);font-size:12px;padding:4px 10px}.zoom button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.85);padding:2px 6px;border-radius:4px}
 .guessbar{display:flex;gap:8px;margin-top:12px}
 input{flex:1;font:inherit;border:1.6px solid #bbb;background:#fff;color:var(--ink);border-radius:8px;padding:10px 14px;min-width:0}input:focus{outline:none;border-color:var(--ink)}
@@ -65,7 +65,7 @@ function hav(a,b,c,d){const p=Math.PI/180,x=Math.sin((c-a)*p/2)**2+Math.cos(a*p)
 function overlap(x,y){const f=a=>a.places.filter(p=>p[3]);const fx=f(x),fy=f(y);
  const c1=fx.filter(p=>fy.some(q=>hav(p[1],p[2],q[1],q[2])<=25)).length,c2=fy.filter(p=>fx.some(q=>hav(p[1],p[2],q[1],q[2])<=25)).length;return Math.min(c1,c2)}
 const dec=y=>Math.floor(y/10)*10;
-const URLX="https://claude.ai/artifact/GSdk3x2cRz84Gwg56LFZW9";function utc(){const d=new Date();return [d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()]}
+const URLX="https://aaditya3625.github.io/songmapia/";function utc(){const d=new Date();return [d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()]}
 function dayNum(){const[y,m,d]=utc();return Math.floor((Date.UTC(y,m,d)-Date.UTC(2026,10,21))/864e5)+1}
 function seedIdx(n){const[y,m,d]=utc();let s=y*10000+(m+1)*100+d;s=(s*2654435761)>>>0;return s%n}
 let marks=[],hints=0,isDaily=true;const KEY="songmapia-daily";
