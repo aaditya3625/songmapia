@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>songmapia</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--green:#1a9850;--mid:#b8892b;--no:#8a8a8a;--ink:#1a1a1a;--muted:#666;--line:#ddd;--pin:#4B2E6F;--sea:#eef2f5;--land:#fff}
+*{box-sizing:border-box}body{margin:0;background:#fafafa;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:16px}
+.wrap{max-width:960px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:10px}
+h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:32px;letter-spacing:-1.5px;margin:0;line-height:1}
+.tag{color:var(--muted);font-size:13px;margin:6px 0 0}
+.modes{display:flex;gap:6px;align-items:center}
+button{font:inherit;font-size:13px;border:.8px solid var(--line);background:#fff;color:var(--ink);border-radius:6px;padding:6px 12px;cursor:pointer}
+button.on,button.p{background:var(--ink);color:#fff;border-color:var(--ink)}button:disabled{opacity:.45;cursor:default}
+.mapbox{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--sea)}
+canvas{width:100%;height:auto;display:block}
+.zoom{position:absolute;top:8px;right:8px;display:flex;gap:6px}.zoom button{background:rgba(255,255,255,.92);font-size:12px;padding:4px 10px}
+.cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.85);padding:2px 6px;border-radius:4px}
+.guessbar{display:flex;gap:8px;margin-top:12px}
+input{flex:1;font:inherit;border:1.6px solid #bbb;background:#fff;color:var(--ink);border-radius:8px;padding:10px 14px;min-width:0}input:focus{outline:none;border-color:var(--ink)}
+.guessbar button{font-size:16px;padding:10px 22px;border-radius:8px}
+.count{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;margin:8px 2px}
+.dots span{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ddd;margin-left:5px}.dots span.u{background:var(--ink)}
+.hl{font-size:13px;color:var(--muted);margin:14px 2px 6px}.hl b{color:var(--ink)}
+.hbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.hbtns button{padding:10px;font-size:14px;border-radius:8px;text-align:left}
+.hout{margin:8px 2px;font-size:14px;min-height:20px}.hout div{margin:3px 0}
+.head,.row{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr .9fr;gap:6px;margin-top:6px}
+.head div{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.cell{border-radius:6px;padding:7px 8px;font-size:14px;border:1px solid var(--line);background:#fff;min-height:44px}
+.name{font-weight:600}.ok{background:var(--green);color:#fff;border-color:var(--green)}.mid{background:var(--mid);color:#fff;border-color:var(--mid)}.no{background:var(--no);color:#fff;border-color:var(--no)}
+.cell small{display:block;opacity:.92;font-size:12px}
+.end{margin-top:14px;padding:12px;border-radius:8px;border:1px solid var(--line);background:#fff}.end li{break-inside:avoid;margin-bottom:6px}.end ul{columns:2;margin:6px 0 0;padding-left:18px;font-size:14px}
+.foot{color:var(--muted);font-size:12px;margin-top:22px;border-top:1px solid var(--line);padding-top:10px;line-height:1.5}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}.overlay.show{display:flex}
+.modal{background:#fff;border-radius:10px;max-width:520px;max-height:85vh;overflow:auto;padding:18px 20px;position:relative;font-size:14px;line-height:1.5}
+.modal h2{font-family:"Space Grotesk",sans-serif;letter-spacing:-.5px;margin:0 0 8px;font-size:20px}.modal p{margin:0 0 10px}.modal .x{position:absolute;top:10px;right:10px;padding:2px 8px}
+.share{margin-top:10px}.share pre{background:#fafafa;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:13px/1.5 ui-monospace,monospace;white-space:pre-wrap;margin:0 0 8px}.share .nx{margin-top:8px;font-size:13px;color:var(--muted)}.guide{display:flex;gap:10px;align-items:flex-start;margin:12px 0 4px}.guide .av{flex:none;width:30px;height:30px;border-radius:50%;background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px "Space Grotesk",sans-serif}.guide .bub{background:#fff;border:1px solid var(--line);border-radius:4px 12px 12px 12px;padding:9px 12px;font-size:14px;line-height:1.45;max-width:100%}.guide .bub b{font-weight:600}.qs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 40px}.qs button{font-size:12px;padding:5px 9px;border-radius:14px}.head>div{cursor:help}@media(max-width:560px){.head,.row{grid-template-columns:1.3fr 1fr 1fr 1fr .8fr;gap:4px}.cell{font-size:12px;padding:6px 5px}.end ul{columns:1}.hbtns button{font-size:12px;padding:8px}}
+</style></head><body><div class="wrap">
+<header><div><h1>songmapia</h1><p class="tag">A song-place puzzle: every pin is a real place named in an artist's songs. Who was it?</p></div>
+<div class="modes"><button id="daily" class="on">Daily</button><button id="rand">Practice</button><button id="help">?</button></div></header>
+<div class="guide"><div class="av">s</div><div class="bub" id="say"></div></div>
+<div class="qs" id="qs"></div>
+<div class="mapbox"><canvas id="cv" width="960" height="460"></canvas><div class="zoom"><button id="zc" class="on">Close-up</button><button id="zw">World</button><button id="zi" title="Zoom in">+</button><button id="zo" title="Zoom out">&minus;</button><button id="zr">Reset view</button></div><div class="cap" id="cap"></div></div>
+<div class="guessbar"><input id="g" list="names" placeholder="Who is it?" autocomplete="off"><button id="go" class="p">Guess</button></div>
+<datalist id="names"></datalist>
+<div class="count"><span id="gc">Guess 1 of 5</span><span class="dots" id="dots"></span></div>
+<div class="head"><div>Artist</div><div>Genre</div><div>Era</div><div>Home</div><div>Shared pins</div></div><div id="rows"></div><div id="end"></div>
+<div class="hl"><b>Free hints</b> &middot; no penalty. Tap a button for a clue.</div>
+<div class="hbtns"><button id="h1">How many places?</button><button id="h2">Hint about the name</button></div>
+<div class="hout" id="hout"></div>
+<div class="foot">Places come from lyric pages, song-fact sites and press features. Genres come from each artist's Wikipedia page. We've checked what we could, but a few places and first-chart years may still be off, so if you spot a mistake, tell us. Two places count as the same if they are within 25 km of each other, and whole states or countries are ignored. Maps use <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain). Lyrics are never shown, only place names.</div>
+</div>
+<div class="overlay" id="ov"><div class="modal"><button class="x" id="xc">&#10005;</button><h2>How to play</h2>
+<p><b>The idea.</b> Songwriters name real places. Each dot on the map is a place named in one artist's songs. Guess the artist.</p>
+<p><b>Your turn.</b> Type a name and press Guess. You have five tries. Each try gets a row that tells you how close you are:</p>
+<p><b>Genre</b>: green means the same main genre. Amber means different main genres, but the two artists share a genre tag (the small text says which). Genres come from each artist's Wikipedia page.<br><b>Era</b>: the decade their first song charted. The arrow points toward the right answer.<br><b>Home</b>: where they come from. Green is the same state, amber is the same region.<br><b>Shared pins</b>: how many of your guess's places sit within 25 km of a place on this map. Whole states and countries don't count.</p>
+<p><b>Crowded map?</b> Pins that sit close together can be pulled apart. Scroll the mouse wheel, pinch with two fingers, double-click, or press + and &minus; to zoom in. Drag to move the map, and press Reset view to start over. Tap a pin to see its name.</p>
+<p><b>Stuck?</b> Two free hint buttons sit under the guesses:<br><b>How many places?</b>: how many places are on the map, and how many are outside the continental US.<br><b>Hint about the name</b>: how many words the name has and its first letter.<br>Tap any pin on the map to see its name, and tap a column title for a plain-words explanation.</p>
+<p><b>Example.</b> You guess Johnny Cash and get green Genre, amber Era with &ldquo;&uarr; later&rdquo;, red Home. So: country, but a later decade, and from somewhere else.</p></div></div>
+<script>
+const $=s=>document.querySelector(s);let A=[],LAND=[],ans=null,guesses=[],over=false;
+const ADJ={"Country|Folk":1,"Rock|Folk":1,"Rock|Pop":1,"Hip-hop|Pop":1};
+const adj=(a,b)=>ADJ[a+"|"+b]||ADJ[b+"|"+a];
+function hav(a,b,c,d){const p=Math.PI/180,x=Math.sin((c-a)*p/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin((d-b)*p/2)**2;return 12742*Math.asin(Math.sqrt(x))}
+function overlap(x,y){const f=a=>a.places.filter(p=>p[3]);const fx=f(x),fy=f(y);
+ const c1=fx.filter(p=>fy.some(q=>hav(p[1],p[2],q[1],q[2])<=25)).length,c2=fy.filter(p=>fx.some(q=>hav(p[1],p[2],q[1],q[2])<=25)).length;return Math.min(c1,c2)}
+const dec=y=>Math.floor(y/10)*10;
+const URLX="https://claude.ai/artifact/GSdk3x2cRz84Gwg56LFZW9";function utc(){const d=new Date();return [d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()]}
+function dayNum(){const[y,m,d]=utc();return Math.floor((Date.UTC(y,m,d)-Date.UTC(2026,10,21))/864e5)+1}
+function seedIdx(n){const[y,m,d]=utc();let s=y*10000+(m+1)*100+d;s=(s*2654435761)>>>0;return s%n}
+let marks=[],hints=0,isDaily=true;const KEY="songmapia-daily";
+function save(){if(!isDaily)return;try{localStorage.setItem(KEY,JSON.stringify({day:dayNum(),g:guesses.map(x=>x.name),hints}))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||"null");return s&&s.day===dayNum()?s:null}catch(e){return null}}
+function start(daily){const pool=A.filter(a=>a.eligible);ans=daily?pool[seedIdx(pool.length)]:pool[Math.floor(Math.random()*pool.length)];guesses=[];marks=[];hints=0;isDaily=daily;over=false;$("#rows").innerHTML="";$("#end").innerHTML="";$("#g").disabled=false;$("#go").disabled=false;$("#g").value="";
+ $("#daily").classList.toggle("on",daily);$("#rand").classList.toggle("on",!daily);hu={1:0,2:0,3:0};$("#hout").innerHTML="";["h1","h2"].forEach(i=>$("#"+i).disabled=false);ans._labels=[];sel=null;zm=1;panx=0;pany=0;$("#cap").textContent="Tap a pin to see its place. Scroll or pinch to zoom, drag to move.";intro(daily);draw();upd();if(daily){const s=load();if(s){hints=s.hints||0;s.g.forEach(n=>{$("#g").value=n;guess(true)})}}}
+let zoomWorld=false,sel=null,PX=[],zm=1,panx=0,pany=0;function draw(){const cv=$("#cv"),c=cv.getContext("2d"),W=cv.width,H=cv.height;
+ const sea="#eef2f5",land="#ffffff",pin="#4B2E6F",fg="#1a1a1a";
+ c.fillStyle=sea;c.fillRect(0,0,W,H);
+ const P=ans.places;let la=P.map(p=>p[1]),lo=P.map(p=>p[2]);let a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo);
+ const mla=(a0+a1)/2,k=Math.cos(mla*Math.PI/180);let sp=Math.max(a1-a0,(o1-o0)*k,5);sp*=1.25;if(zoomWorld){a0=-55;a1=75;o0=-170;o1=170}
+ const cx=(o0+o1)/2,cy=(a0+a1)/2;const aspect=W/H;let hh=sp,ww=sp*aspect;if((o1-o0)*k*1.25>ww){ww=(o1-o0)*k*1.25;hh=ww/aspect}
+ const X0=o=>W/2+(o-cx)*k*(W/ww),Y0=a=>H/2-(a-cy)*(H/hh);const X=o=>W/2+(X0(o)-W/2)*zm+panx,Y=a=>H/2+(Y0(a)-H/2)*zm+pany;
+ c.fillStyle=land;c.strokeStyle="#cfd6db";c.lineWidth=1;
+ for(const poly of LAND){c.beginPath();poly.forEach((q,i)=>{const x=X(q[0]),y=Y(q[1]);i?c.lineTo(x,y):c.moveTo(x,y)});c.closePath();c.fill();c.stroke()}
+ const shown=ans._labels||[];PX=P.map(p=>({x:X(p[2]),y:Y(p[1]),n:p[0]}));
+ for(const p of P){c.beginPath();c.arc(X(p[2]),Y(p[1]),p[0]===sel?8:5,0,7);c.fillStyle=pin;c.globalAlpha=.85;c.fill();c.globalAlpha=1;c.strokeStyle="#fff";c.lineWidth=1.5;c.stroke()}
+ c.font="600 15px system-ui";c.fillStyle=fg;c.lineWidth=4;
+ for(const p of P){if(shown.includes(p[0])||over||p[0]===sel){const t=p[0].split(",")[0];const x=X(p[2])+9,y=Y(p[1])+4;c.strokeStyle=sea;c.strokeText(t,x,y);c.fillText(t,x,y)}}}
+let hu={1:0,2:0,3:0};
+function upd(){$("#gc").textContent=over?"Done":"Guess "+(guesses.length+1)+" of 5";$("#dots").innerHTML=[0,1,2,3,4].map(i=>`<span class="${i<guesses.length?"u":""}"></span>`).join("")}
+
+const EXPL={Artist:"The artist you guessed.",Genre:"Green: your artist and the answer have the same main genre. Amber: different main genre, but their genre lists overlap (the small text says which one). Red: nothing in common. Genres come from each artist's Wikipedia infobox.",Era:"The decade the artist first charted. The arrow points toward the answer's decade.",Home:"Where the artist comes from: green same state, amber same region of the US.",Shared:"How many places both artists' songs name, counting places within 25 km as the same. Whole states and countries are ignored."};
+function say(t){$("#say").innerHTML=t}
+function chips(list){$("#qs").innerHTML=list.map(([l,f])=>`<button data-i="${l}">${l}</button>`).join("");[...$("#qs").children].forEach((b,i)=>b.onclick=list[i][1])}
+function intro(daily){say(`Hi! I'm thinking of an artist. Every dot on the map is a real place named in their songs. Can you tell who? You have five guesses, and I'll tell you how close you are after each one.`);
+ chips([["How does this work?",()=>$("#ov").classList.add("show")],["Give me a nudge",()=>{showH(1);say("Here's a nudge: I've told you how many places there are below the map. Tap any pin to see its name.")}],["I know nothing about music",()=>say("No problem. Start with a big name you know, say Bruce Springsteen or Dolly Parton. Even a wrong guess narrows genre, era and home for you.")]])}
+function react(g,win,o,gm,em,hm){const n=guesses.length,left=5-n;
+ if(win){say(n===1?`Wow, first try! It is <b>${ans.name}</b>.`:`Yes! <b>${ans.name}</b>. You got it in ${n}. Nice work.`);chips([["Play another",()=>start(false)]]);return}
+ if(left===0){say(`Out of guesses. It was <b>${ans.name}</b>. The places are listed below if you want to see what gave it away.`);chips([["Play another",()=>start(false)]]);return}
+ const bits=[];
+ bits.push(gm==="ok"?`${g.name} is the <b>same genre</b>`:gm==="mid"?`${g.name} is a <b>neighbouring genre</b>`:`<b>Not ${g.genre}</b>`);
+ const d1=dec(g.year),d2=dec(ans.year);
+ bits.push(d1===d2?`same decade`:d2>d1?`but my artist broke through <b>later</b> than the ${d1}s`:`but my artist broke through <b>earlier</b> than the ${d1}s`);
+ let t=bits[0]+", "+bits[1]+".";
+ if(hm==="ok")t+=` And they're from the same state.`;else if(hm==="mid")t+=` Same region of the US, different state.`;else t+=` Different part of the US.`;
+ if(o>=3)t+=` You share <b>${o} places</b> with my artist, which is a strong sign.`;else if(o>=1)t+=` You share ${o} place with my artist.`;
+ t+=` ${left} guess${left>1?"es":""} left.`;say(t);
+ const c=[["What do the colours mean?",()=>say(EXPL.Genre+" "+EXPL.Home+" Tap any column title for more.")]];
+ if(n>=3&&!hu[2])c.push(["Hint about the name",()=>showH(2)]);chips(c)}
+
+function shareText(win){const sq={ok:"\uD83D\uDFE9",mid:"\uD83D\uDFE8",no:"\u2B1B"};const n=guesses.length;
+ const head=(isDaily?"songmapia #"+dayNum():"songmapia practice")+"  "+(win?n:"X")+"/5";
+ const rows=marks.map(m=>m.map(c=>sq[c]).join("")).join("\n");
+ return head+"\n"+rows+"\nHints used: "+hints+"\n"+URLX}
+function nextIn(){const[y,m,d]=utc();const ms=Date.UTC(y,m,d+1)-Date.now();const h=Math.floor(ms/36e5),mi=Math.floor(ms%36e5/6e4);return h+"h "+mi+"m"}
+function shareUI(win){const t=shareText(win);const box=document.createElement("div");box.className="share";
+ box.innerHTML=`<pre id="sp">${t}</pre><button class="p" id="cp">Copy result</button> <span id="cm"></span>${isDaily?`<div class="nx">Next daily puzzle in ${nextIn()}.</div>`:""}`;
+ $("#end").appendChild(box);
+ $("#cp").onclick=async()=>{let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{const r=document.createRange();r.selectNodeContents($("#sp"));const s=getSelection();s.removeAllRanges();s.addRange(r);ok=document.execCommand("copy")}catch(e2){}}
+  $("#cm").textContent=ok?"Copied. Paste it to a friend.":"Select the text above and copy it."}}
+function showH(i){if(over)return;hu[i]=1;hints++;save();const n=ans.places.length,out=ans.outside,L=[];
+ if(hu[1])L.push(`<div>${n} distinct places, ${out?out+" outside the continental US":"all in the continental US"}.</div>`);
+ if(hu[2])L.push(`<div>The name has ${ans.name.split(" ").length} word${ans.name.split(" ").length>1?"s":""} and starts with &ldquo;${ans.name[0]}&rdquo;.</div>`);
+ if(hu[3]){const topP=ans.places.find(p=>p[0]===ans.top);const nxt=ans.places.filter(p=>p[3]&&p[0]!==ans.top);ans._labels=ans._labels||[];
+  const pick=ans._labels.length===0?topP:nxt[ans._labels.length-1];if(pick&&!ans._labels.includes(pick[0]))ans._labels.push(pick[0]);
+  L.push(`<div>Named on the map: ${ans._labels.map(x=>x.split(",")[0]).join(", ")}. Press again for another.</div>`)}
+ $("#hout").innerHTML=L.join("");if(i===1)say(`There are <b>${n}</b> places on this map${out?`, and ${out} are outside the continental US`:", all in the continental US"}.`);if(i===2)say(`The name has ${ans.name.split(" ").length} word${ans.name.split(" ").length>1?"s":""} and starts with <b>${ans.name[0]}</b>.`);draw()}
+function tile(cls,txt,sub){return `<div class="cell ${cls}">${txt}${sub?`<small>${sub}</small>`:""}</div>`}
+function guess(restoring){if(over)return;const v=$("#g").value.trim().toLowerCase();const g=A.find(a=>a.name.toLowerCase()===v);if(!g){$("#g").style.borderColor="#d73027";return}
+ $("#g").style.borderColor="";if(guesses.find(x=>x.name===g.name)){$("#g").value="";return}
+ guesses.push(g);$("#g").value="";
+ const gsh=g.gf.filter(x=>ans.gf.includes(x)),ge=g.genre===ans.genre?tile("ok","✓ "+g.genre,g.gw[0]):gsh.length?tile("mid","~ "+g.genre,"shares "+gsh[0]):tile("no","✗ "+g.genre,g.gw[0]);
+ const d1=dec(g.year),d2=dec(ans.year),ar=d2>d1?"↑ later":d2<d1?"↓ earlier":"";
+ const er=d1===d2?tile("ok","✓ "+d1+"s"):Math.abs(d1-d2)<=10?tile("mid","~ "+d1+"s",ar):tile("no","✗ "+d1+"s",ar);
+ const hm=g.state===ans.state?tile("ok","✓ "+g.state,g.region):g.region===ans.region?tile("mid","~ "+g.state,g.region):tile("no","✗ "+g.state,g.region);
+ const o=overlap(g,ans);const ov=o>=3?tile("ok","✓ "+o):o>=1?tile("mid","~ "+o):tile("no","✗ 0");
+ const win=g.name===ans.name;const cls0=s=>s.includes("ok")?"ok":s.includes("mid")?"mid":"no";marks.push([cls0(ge),cls0(er),cls0(hm),win?"ok":o>=3?"ok":o>=1?"mid":"no"]);save();
+ $("#rows").insertAdjacentHTML("beforeend",`<div class="row">${tile(win?"ok":"", `<span class="name">${g.name}</span>`)}${ge}${er}${hm}${win?tile("ok","✓ you"):ov}</div>`);
+ if(win||guesses.length>=5){over=true;$("#g").disabled=true;$("#go").disabled=true;
+  $("#end").innerHTML=`<div class="end"><b>${win?"Got it in "+guesses.length+"!":"Out of guesses."}</b> The answer is <b>${ans.name}</b>.<br><small>Genres (Wikipedia): <a href="${ans.gsrc}" target="_blank" rel="noopener">${ans.gw.join(", ")}</a></small><br><small>Places and the songs they appear in:</small><ul>${ans.places.map(p=>{const sg=(p[4]||[]).filter(s=>!/song not identified/i.test(s));return `<li><b>${p[0]}</b><br><small>${sg.length?(sg.length>3?sg.slice(0,3).join(" · ")+" · +"+(sg.length-3)+" more":sg.join(" · ")):"song not identified"}</small></li>`}).join("")}</ul></div>`}
+ const cl=s=>s.includes("ok")?"ok":s.includes("mid")?"mid":"no";react(g,win,o,cl(ge),cl(er),cl(hm));
+ if(over&&!win&&guesses.length>=5){}
+ if(over)shareUI(win);
+ upd();draw()}
+Promise.all([fetch("artists.json").then(r=>r.json()),fetch("land.json").then(r=>r.json())]).then(([a,l])=>{A=a;LAND=l;
+ $("#names").innerHTML=A.map(x=>`<option value="${x.name}">`).join("");start(true)}).catch(e=>{$("#cap").textContent="Could not load data: "+e});
+document.querySelectorAll(".head>div").forEach((d,i)=>{const k=["Artist","Genre","Era","Home","Shared"][i];d.onclick=()=>say("<b>"+d.textContent+".</b> "+EXPL[k])});$("#go").onclick=guess;$("#g").addEventListener("keydown",e=>{if(e.key==="Enter")guess()});
+
+let dragMoved=false;const PT=new Map();let lastD=0;
+function zoomAt(f,mx,my){const cv=$("#cv"),W=cv.width,H=cv.height,n=Math.min(60,Math.max(1,zm*f));if(n===zm)return;const r=n/zm;panx=mx-W/2-(mx-W/2-panx)*r;pany=my-H/2-(my-H/2-pany)*r;zm=n;if(zm===1){panx=0;pany=0}draw()}
+function cpos(e){const cv=$("#cv"),r=cv.getBoundingClientRect(),s=cv.width/r.width;return [(e.clientX-r.left)*s,(e.clientY-r.top)*s,s]}
+(function(){const cv=$("#cv");cv.style.touchAction="none";
+ cv.addEventListener("wheel",e=>{e.preventDefault();const[x,y]=cpos(e);zoomAt(e.deltaY<0?1.25:0.8,x,y)},{passive:false});
+ cv.addEventListener("dblclick",e=>{const[x,y]=cpos(e);zoomAt(2,x,y)});
+ cv.addEventListener("pointerdown",e=>{PT.set(e.pointerId,[e.clientX,e.clientY]);dragMoved=false;lastD=0;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+ cv.addEventListener("pointermove",e=>{if(!PT.has(e.pointerId))return;const p=PT.get(e.pointerId),dx=e.clientX-p[0],dy=e.clientY-p[1];
+  if(PT.size===1){if(Math.abs(dx)+Math.abs(dy)>3)dragMoved=true;if(dragMoved&&zm>1){const s=cpos(e)[2];panx+=dx*s;pany+=dy*s;PT.set(e.pointerId,[e.clientX,e.clientY]);draw()}else if(dragMoved){PT.set(e.pointerId,[e.clientX,e.clientY])}}
+  else if(PT.size===2){PT.set(e.pointerId,[e.clientX,e.clientY]);const [a,b]=[...PT.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);dragMoved=true;if(lastD){const r=cv.getBoundingClientRect(),s=cv.width/r.width;zoomAt(d/lastD,((a[0]+b[0])/2-r.left)*s,((a[1]+b[1])/2-r.top)*s)}lastD=d}});
+ const end=e=>{PT.delete(e.pointerId);lastD=0;if(PT.size===0)setTimeout(()=>{dragMoved=false},0)};cv.addEventListener("pointerup",end);cv.addEventListener("pointercancel",end);
+ const mid=()=>[cv.width/2,cv.height/2];$("#zi").onclick=()=>zoomAt(1.6,...mid());$("#zo").onclick=()=>zoomAt(1/1.6,...mid());$("#zr").onclick=()=>{zm=1;panx=0;pany=0;draw()}})();
+$("#cv").style.cursor="pointer";$("#cv").addEventListener("pointerup",e=>{if(!ans||dragMoved)return;const cv=$("#cv"),r=cv.getBoundingClientRect(),s=cv.width/r.width,x=(e.clientX-r.left)*s,y=(e.clientY-r.top)*s;let best=null,bd=1e9;for(const p of PX){const d=Math.hypot(p.x-x,p.y-y);if(d<bd){bd=d;best=p}}
+ sel=best&&bd<=22*s/ (s||1)?best.n:null;$("#cap").textContent=sel?sel:(ans?(over?"":"Tap a pin to see its place"):"");if(sel)say("That pin is <b>"+sel+"</b>. Does that sound like a songwriter you know?");draw()});$("#h1").onclick=()=>showH(1);$("#h2").onclick=()=>showH(2);$("#help").onclick=()=>$("#ov").classList.add("show");$("#xc").onclick=()=>$("#ov").classList.remove("show");$("#ov").onclick=e=>{if(e.target.id==="ov")$("#ov").classList.remove("show")};$("#zc").onclick=()=>{zm=1;panx=0;pany=0;zoomWorld=false;$("#zc").classList.add("on");$("#zw").classList.remove("on");draw()};$("#zw").onclick=()=>{zm=1;panx=0;pany=0;zoomWorld=true;$("#zw").classList.add("on");$("#zc").classList.remove("on");draw()};$("#daily").onclick=()=>start(true);$("#rand").onclick=()=>start(false);
+
+</script></body></html>
