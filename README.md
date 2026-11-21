@@ -1,6 +1,8 @@
 # songmapia
 
-A daily music game. Every dot on the map is a real place named in one artist's songs. Guess the artist in five tries.
+A daily music game. Every dot on the map is a real place named in one artist's songs. Guess the artist in five tries.:
+
+link to play: https://aaditya3625.github.io/songmapia/
 
 ## How it plays
 
