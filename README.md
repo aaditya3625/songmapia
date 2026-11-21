@@ -24,17 +24,3 @@ A new artist appears every day, the same for everyone, and the day changes at mi
 - **Inspiration:** layout and style follow regnum, and the daily format follows Wordle.
 
 songmapia is an independent project and is not affiliated with any artist, label or lyrics site.
-
-## Building
-
-The game is one static page with no build step. It loads `artists.json` and `land.json` from beside `index.html`, so serve the folder:
-
-    python3 -m http.server 8000
-
-then open http://localhost:8000. Before hosting it yourself, change the `URLX` constant in `index.html` to your own page's address. It is the link added to the copied result.
-
-To rebuild `artists.json` from the CSVs, see `scripts/build_game.py`.
-
-## Licence
-
-Add a `LICENSE` file of your choice for the code. Third-party material is listed in `THIRD_PARTY_LICENSES.md`.
